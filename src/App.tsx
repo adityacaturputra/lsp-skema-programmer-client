@@ -3,26 +3,26 @@ import { Routes, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
-import AddTutorial from "./components/AddTutorial";
-import Tutorial from "./components/Tutorial";
-import TutorialsList from "./components/TutorialsList";
+import AddUser from "./components/AddUser";
+import User from "./components/User";
+import UsersList from "./components/UsersList";
 
 const App: React.FC = () => {
   return (
     <div>
       <nav className="navbar navbar-expand navbar-dark bg-dark">
-        <a href="/tutorials" className="navbar-brand">
-          bezKoder
+        <a href="/users" className="navbar-brand">
+          PT. Baroqah tbk
         </a>
         <div className="navbar-nav mr-auto">
           <li className="nav-item">
-            <Link to={"/tutorials"} className="nav-link">
-              Tutorials
+            <Link to={"/users"} className="nav-link">
+              Daftar Pegawai
             </Link>
           </li>
           <li className="nav-item">
             <Link to={"/add"} className="nav-link">
-              Add
+              Tambah
             </Link>
           </li>
         </div>
@@ -30,10 +30,10 @@ const App: React.FC = () => {
 
       <div className="container mt-3">
         <Routes>
-          <Route path="/" element={<TutorialsList/>} />
-          <Route path="/tutorials" element={<TutorialsList/>} />
-          <Route path="/add" element={<AddTutorial/>} />
-          <Route path="/tutorials/:id" element={<Tutorial/>} />
+          <Route path="/" element={<UsersList/>} />
+          <Route path="/users" element={<UsersList/>} />
+          <Route path="/add" element={<AddUser/>} />
+          <Route path="/users/:id" element={<User/>} />
         </Routes>
       </div>
     </div>

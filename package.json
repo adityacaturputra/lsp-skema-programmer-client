@@ -12,6 +12,7 @@
     "@types/react-dom": "^17.0.8",
     "axios": "^0.26.1",
     "bootstrap": "^4.6.0",
+    "env-cmd": "^10.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^6.2.2",
@@ -21,6 +22,7 @@
   },
   "scripts": {
     "start": "react-scripts --openssl-legacy-provider start",
+    "dev": "env-cmd -f ./.env react-scripts --openssl-legacy-provider start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

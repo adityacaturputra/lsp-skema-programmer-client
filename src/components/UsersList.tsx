@@ -4,12 +4,14 @@ import { Link } from "react-router-dom";
 import IUserData from '../types/User';
 import { notifications } from "@mantine/notifications";
 import nProgress from "nprogress";
+import downloadFileWithFuntionality from "../utils/helpers/downloadFileWithFunctionality";
 
 const UsersList: React.FC = () => {
   const [users, setUsers] = useState<Array<IUserData>>([]);
   const [currentUser, setCurrentUser] = useState<IUserData | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
   const [searchName, setSearchName] = useState<string>("");
+  const [monthPayroll, setMonthPayroll] = useState<number>(1);
 
   useEffect(() => {
     retrieveUsers();
@@ -19,10 +21,14 @@ const UsersList: React.FC = () => {
     const searchName = e.target.value;
     setSearchName(searchName);
   };
+  const onChangeMonthPayroll = (e: ChangeEvent<HTMLSelectElement>) => {
+    const monthPayroll = +e.target.value;
+    setMonthPayroll(monthPayroll);
+  };
 
   const retrieveUsers = () => {
     nProgress.start();
-    UserDataService.getAll()
+    UserDataService.getAll() 
       .then((response: any) => {
         setUsers(response.data);
         nProgress.done();
@@ -35,6 +41,18 @@ const UsersList: React.FC = () => {
         nProgress.done();
       });
   };
+
+  const generateReport = () => {
+    downloadFileWithFuntionality({
+      endpoint: '/users/payrolls/reports',
+      filename: 'Laporan Penggajian',
+      axiosConfigs: {
+        params: {
+          month_count: monthPayroll
+        }
+      }
+    })
+  }
 
   const refreshList = () => {
     retrieveUsers();
@@ -90,6 +108,7 @@ const UsersList: React.FC = () => {
   );
   const pph = +currentUser!?.salary * 5/100;
   const gaji = +currentUser!?.salary + bonus - pph
+  const totalGajiBulan = (+currentUser!?.salary + bonus - pph) * monthPayroll;
 
   return (
     <div className="list row">
@@ -109,6 +128,23 @@ const UsersList: React.FC = () => {
               onClick={findByName}
             >
               Search
+            </button>
+          </div>
+        </div>
+        <div className="input-group mb-3">
+        <select className="form-select" onChange={onChangeMonthPayroll} value={monthPayroll} aria-label="Default select example">
+          <option selected value={1}>1 Bulan</option>
+          {[2,3,4,5,6,7,8,9,10,11,12,].map(month => (
+            <option value={month}>{month} Bulan</option>
+          ))}
+        </select>
+          <div className="input-group-append">
+            <button
+              className="btn btn-outline-secondary"
+              type="button"
+              onClick={generateReport}
+            >
+              Cetak Penggajian
             </button>
           </div>
         </div>
@@ -182,6 +218,12 @@ const UsersList: React.FC = () => {
                 <strong>Gaji (Gaji Pokok + Bonus - PPH) :</strong>
               </label>{" "}
               {gaji}
+            </div>
+            <div>
+              <label>
+                <strong>Total Gaji * {monthPayroll} Bulan :</strong>
+              </label>{" "}
+              {totalGajiBulan}
             </div>
 
             <Link

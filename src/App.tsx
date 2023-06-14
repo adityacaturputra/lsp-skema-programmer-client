@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import { Routes, Route, Link } from "react-router-dom";
+import 'nprogress/nprogress.css';
+import './styles/nprogress.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-
 import AddUser from "./components/AddUser";
 import User from "./components/User";
 import UsersList from "./components/UsersList";

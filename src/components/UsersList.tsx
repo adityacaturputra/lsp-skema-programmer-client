@@ -2,6 +2,8 @@ import React, { useState, useEffect, ChangeEvent } from "react";
 import UserDataService from "../services/UserService";
 import { Link } from "react-router-dom";
 import IUserData from '../types/User';
+import { notifications } from "@mantine/notifications";
+import nProgress from "nprogress";
 
 const UsersList: React.FC = () => {
   const [users, setUsers] = useState<Array<IUserData>>([]);
@@ -19,13 +21,18 @@ const UsersList: React.FC = () => {
   };
 
   const retrieveUsers = () => {
+    nProgress.start();
     UserDataService.getAll()
       .then((response: any) => {
         setUsers(response.data);
-        console.log(response.data);
+        nProgress.done();
       })
       .catch((e: Error) => {
-        console.log(e);
+        notifications.show({
+          title: 'Maaf Terjadi Kegagalan',
+          message: e.message,
+        })
+        nProgress.done();
       });
   };
 
@@ -40,37 +47,49 @@ const UsersList: React.FC = () => {
     setCurrentIndex(index);
   };
 
-  const removeAllUsers = () => {
-    UserDataService.removeAll()
-      .then((response: any) => {
-        console.log(response.data);
-        refreshList();
-      })
-      .catch((e: Error) => {
-        console.log(e);
-      });
+  const removeUser = () => {
+    if(window.confirm("Are you sure you want to remove?")) {
+      nProgress.start();
+      UserDataService.remove(currentUser?.id)
+        .then((response: any) => {
+          nProgress.done();
+          refreshList();
+        })
+        .catch((e: Error) => {
+          nProgress.done();
+          notifications.show({
+            title: 'Maaf Terjadi Kegagalan',
+            message: e.message,
+          })
+        });
+    }
   };
 
   const findByName = () => {
+    nProgress.start();
     UserDataService.findByName(searchName)
       .then((response: any) => {
         setUsers(response.data);
         setCurrentUser(null);
         setCurrentIndex(-1);
-        console.log(response.data);
+        nProgress.done();
       })
       .catch((e: Error) => {
-        console.log(e);
+        nProgress.done();
+        notifications.show({
+          title: 'Maaf Terjadi Kegagalan',
+          message: e.message,
+        })
       });
   };
 
-  const bonus = +currentUser!?.gaji_pokok * (
-    currentUser?.jabatan?.toLowerCase()?.includes('manager') ? 1/2 :
-    currentUser?.jabatan?.toLowerCase()?.includes('supervisor') ? 4/10 :
-    currentUser?.jabatan?.toLowerCase()?.includes('staff') ? 3/10 : 1
+  const bonus = +currentUser!?.salary * (
+    currentUser?.position?.toLowerCase()?.includes('manager') ? 1/2 :
+    currentUser?.position?.toLowerCase()?.includes('supervisor') ? 4/10 :
+    currentUser?.position?.toLowerCase()?.includes('staff') ? 3/10 : 0
   );
-  const pph = +currentUser!?.gaji_pokok * 5/100;
-  const gaji = +currentUser!?.gaji_pokok + bonus - pph
+  const pph = +currentUser!?.salary * 5/100;
+  const gaji = +currentUser!?.salary + bonus - pph
 
   return (
     <div className="list row">
@@ -111,13 +130,6 @@ const UsersList: React.FC = () => {
               </li>
             ))}
         </ul>
-
-        <button
-          className="m-3 btn btn-sm btn-danger"
-          onClick={removeAllUsers}
-        >
-          Hapus Semua Pegawai
-        </button>
       </div>
       <div className="col-md-6">
         {currentUser ? (
@@ -133,13 +145,25 @@ const UsersList: React.FC = () => {
               <label>
                 <strong>Jabatan:</strong>
               </label>{" "}
-              {currentUser.jabatan}
+              {currentUser.position}
+            </div>
+            <div>
+              <label>
+                <strong>No Telepon:</strong>
+              </label>{" "}
+              {currentUser.phone}
+            </div>
+            <div>
+              <label>
+                <strong>Alamat:</strong>
+              </label>{" "}
+              {currentUser.address}
             </div>
             <div>
               <label>
                 <strong>Gaji Pokok:</strong>
               </label>{" "}
-              {currentUser.gaji_pokok}
+              {currentUser.salary}
             </div>
             <div>
               <label>
@@ -166,6 +190,12 @@ const UsersList: React.FC = () => {
             >
               Edit
             </Link>
+            <button
+              className="badge badge-danger ml-2"
+              onClick={removeUser}
+            >
+              Hapus Pegawai
+            </button>
           </div>
         ) : (
           <div>

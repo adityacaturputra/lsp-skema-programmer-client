@@ -1,5 +1,7 @@
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from "react-router-dom";
+import { MantineProvider } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 
 import './index.css';
 import App from './App';
@@ -7,7 +9,10 @@ import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <BrowserRouter>
-    <App />
+    <MantineProvider withNormalizeCSS withGlobalStyles>
+        <Notifications />
+        <App />
+    </MantineProvider>
   </BrowserRouter>,
   document.getElementById('root')
 );

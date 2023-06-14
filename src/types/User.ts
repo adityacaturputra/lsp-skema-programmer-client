@@ -1,6 +1,8 @@
 export default interface IUserData {
   id?: any | null,
   name: string,
-  jabatan: string,
-  gaji_pokok: number,
+  position: string,
+  salary: number,
+  phone: string,
+  address: string
 }

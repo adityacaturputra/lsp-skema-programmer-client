@@ -1,13 +1,17 @@
 import React, { useState, ChangeEvent } from "react";
 import UserDataService from "../services/UserService";
 import IUserData from '../types/User';
+import { notifications } from "@mantine/notifications";
+import nProgress from "nprogress";
 
 const AddUser: React.FC = () => {
   const initialUserState = {
     id: null,
     name: "",
-    jabatan: "",
-    gaji_pokok: 0,
+    position: "",
+    salary: 0,
+    phone: "",
+    address: "",
   };
   const [user, setUser] = useState<IUserData>(initialUserState);
   const [submitted, setSubmitted] = useState<boolean>(false);
@@ -16,12 +20,15 @@ const AddUser: React.FC = () => {
     const { name, value } = event.target;
     setUser({ ...user, [name]: value });
   };
-
+  
   const saveUser = () => {
+    nProgress.start();
     var data = {
       name: user.name,
-      jabatan: user.jabatan,
-      gaji_pokok: user.gaji_pokok
+      position: user.position,
+      salary: user.salary,
+      phone: user.phone,
+      address: user.address,
     };
 
     UserDataService.create(data)
@@ -29,14 +36,20 @@ const AddUser: React.FC = () => {
         setUser({
           id: response.data.id,
           name: response.data.name,
-          jabatan: response.data.jabatan,
-          gaji_pokok: response.data.gaji_pokok,
+          position: response.data.position,
+          salary: response.data.salary,
+          phone: response.data.phone,
+          address: response.data.address,
         });
         setSubmitted(true);
-        console.log(response.data);
+        nProgress.done();
       })
       .catch((e: Error) => {
-        console.log(e);
+        nProgress.done();
+        notifications.show({
+          title: 'Maaf Terjadi Kegagalan',
+          message: e.message,
+        })
       });
   };
 
@@ -70,27 +83,51 @@ const AddUser: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="jabatan">Jabatan</label>
+            <label htmlFor="position">Jabatan</label>
             <input
               type="text"
               className="form-control"
-              id="jabatan"
+              id="position"
               required
-              value={user.jabatan}
+              value={user.position}
               onChange={handleInputChange}
-              name="jabatan"
+              name="position"
             />
           </div>
           <div className="form-group">
-            <label htmlFor="gaji_pokok">Gaji Pokok</label>
+            <label htmlFor="salary">Gaji Pokok</label>
             <input
               type="text"
               className="form-control"
-              id="gaji_pokok"
+              id="salary"
               required
-              value={user.gaji_pokok}
+              value={user.salary}
               onChange={handleInputChange}
-              name="gaji_pokok"
+              name="salary"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="phone">No Telepon</label>
+            <input
+              type="text"
+              className="form-control"
+              id="phone"
+              required
+              value={user.phone}
+              onChange={handleInputChange}
+              name="phone"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="address">Alamat</label>
+            <input
+              type="text"
+              className="form-control"
+              id="address"
+              required
+              value={user.address}
+              onChange={handleInputChange}
+              name="address"
             />
           </div>
 

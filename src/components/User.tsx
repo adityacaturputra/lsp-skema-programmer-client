@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import UserDataService from "../services/UserService";
 import IUserData from "../types/User";
+import { notifications } from "@mantine/notifications";
+import nProgress from "nprogress";
 
 const User: React.FC = () => {
   const { id }= useParams();
@@ -11,20 +13,27 @@ const User: React.FC = () => {
   const initialUserState = {
     id: null,
     name: "",
-    jabatan: "",
-    gaji_pokok: 0
+    position: "",
+    salary: 0,
+    phone: "",
+    address: "",
   };
   const [currentUser, setCurrentUser] = useState<IUserData>(initialUserState);
   const [message, setMessage] = useState<string>("");
 
   const getUser = (id: string) => {
+    nProgress.start();
     UserDataService.get(id)
       .then((response: any) => {
         setCurrentUser(response.data);
-        console.log(response.data);
+        nProgress.done();
       })
       .catch((e: Error) => {
-        console.log(e);
+        nProgress.done();
+        notifications.show({
+          title: 'Maaf Terjadi Kegagalan',
+          message: e.message,
+        })
       });
   };
 
@@ -39,24 +48,35 @@ const User: React.FC = () => {
   };
 
   const updateUser = () => {
+    nProgress.start();
     UserDataService.update(currentUser.id, currentUser)
       .then((response: any) => {
-        console.log(response.data);
         setMessage("The user was updated successfully!");
+        nProgress.done();
       })
       .catch((e: Error) => {
-        console.log(e);
+        console.log(e)
+        notifications.show({
+          title: 'Maaf Terjadi Kegagalan',
+          message: e.message,
+        })
+        nProgress.done();
       });
   };
 
   const deleteUser = () => {
+    nProgress.start();
     UserDataService.remove(currentUser.id)
       .then((response: any) => {
-        console.log(response.data);
+        nProgress.done();
         navigate("/users");
       })
       .catch((e: Error) => {
-        console.log(e);
+        nProgress.done();
+        notifications.show({
+          title: 'Maaf Terjadi Kegagalan',
+          message: e.message,
+        })
       });
   };
 
@@ -78,24 +98,46 @@ const User: React.FC = () => {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="jabatan">Jabatan</label>
+              <label htmlFor="position">Jabatan</label>
               <input
                 type="text"
                 className="form-control"
-                id="jabatan"
-                name="jabatan"
-                value={currentUser.jabatan}
+                id="position"
+                name="position"
+                value={currentUser.position}
                 onChange={handleInputChange}
               />
             </div>
             <div className="form-group">
-              <label htmlFor="gaji_pokok">Gaji Pokok</label>
+              <label htmlFor="salary">Gaji Pokok</label>
               <input
                 type="text"
                 className="form-control"
-                id="gaji_pokok"
-                name="gaji_pokok"
-                value={currentUser.gaji_pokok}
+                id="salary"
+                name="salary"
+                value={currentUser.salary}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="phone">No Telepon</label>
+              <input
+                type="text"
+                className="form-control"
+                id="phone"
+                name="phone"
+                value={currentUser.phone}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="address">Alamat</label>
+              <input
+                type="text"
+                className="form-control"
+                id="address"
+                name="address"
+                value={currentUser.address}
                 onChange={handleInputChange}
               />
             </div>

@@ -3,6 +3,7 @@ import UserDataService from "../services/UserService";
 import IUserData from '../types/User';
 import { notifications } from "@mantine/notifications";
 import nProgress from "nprogress";
+import validateUser from "../utils/helpers/validateUser";
 
 const AddUser: React.FC = () => {
   const initialUserState = {
@@ -22,6 +23,11 @@ const AddUser: React.FC = () => {
   };
   
   const saveUser = () => {
+    if(validateUser(user)) {
+      return
+    }
+    
+    
     nProgress.start();
     var data = {
       name: user.name,

@@ -5,6 +5,7 @@ import UserDataService from "../services/UserService";
 import IUserData from "../types/User";
 import { notifications } from "@mantine/notifications";
 import nProgress from "nprogress";
+import validateUser from "../utils/helpers/validateUser";
 
 const User: React.FC = () => {
   const { id }= useParams();
@@ -48,6 +49,9 @@ const User: React.FC = () => {
   };
 
   const updateUser = () => {
+    if(validateUser(currentUser)) {
+      return
+    }
     nProgress.start();
     UserDataService.update(currentUser.id, currentUser)
       .then((response: any) => {
